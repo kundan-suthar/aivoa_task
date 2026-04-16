@@ -1,7 +1,13 @@
 import React from 'react';
-import { Calendar, Clock, Search, Mic, Plus, Info, CheckCircle2, FileText, Package, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, Search, Mic, Plus, Info, FileText, Package } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { setField } from './interactionDetailsSlice';
 
 const InteractionDetails: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const form = useAppSelector(state => state.interaction);
+
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="p-4">
@@ -16,6 +22,8 @@ const InteractionDetails: React.FC = () => {
                 type="text"
                 placeholder="Search or select HCP..."
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={form.hcpName}
+                onChange={e => dispatch(setField({ field: 'hcpName', value: e.target.value }))}
               />
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             </div>
@@ -24,7 +32,10 @@ const InteractionDetails: React.FC = () => {
           {/* Interaction Type */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-600 block">Interaction Type</label>
-            <select className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer">
+            <select
+              value={form.interactionType}
+              onChange={e => dispatch(setField({ field: 'interactionType', value: e.target.value as any }))}
+              className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer">
               <option>Meeting</option>
               <option>Call</option>
               <option>Email</option>
@@ -38,7 +49,8 @@ const InteractionDetails: React.FC = () => {
             <div className="relative">
               <input
                 type="date"
-                defaultValue="2025-04-19"
+                value={form.date}
+                onChange={e => dispatch(setField({ field: 'date', value: e.target.value }))}
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -51,7 +63,8 @@ const InteractionDetails: React.FC = () => {
             <div className="relative">
               <input
                 type="time"
-                defaultValue="19:36"
+                value={form.time}
+                onChange={e => dispatch(setField({ field: 'time', value: e.target.value }))}
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <Clock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -65,6 +78,8 @@ const InteractionDetails: React.FC = () => {
           <div className="relative">
             <input
               type="text"
+              value={form.attendees}
+              onChange={e => dispatch(setField({ field: 'attendees', value: e.target.value }))}
               placeholder="Enter names or search..."
               className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
@@ -77,6 +92,8 @@ const InteractionDetails: React.FC = () => {
           <div className="relative">
             <textarea
               rows={3}
+              value={form.topicsDiscussed}
+              onChange={e => dispatch(setField({ field: 'topicsDiscussed', value: e.target.value }))}
               placeholder="Enter key discussion points..."
               className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
             ></textarea>
@@ -93,7 +110,7 @@ const InteractionDetails: React.FC = () => {
         <div className="mt-8 pt-8 border-t border-slate-100">
           <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4">Materials Shared / Samples Distributed</h3>
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <div className="p-4 bg-slate-50 rounded-lg border border-dashed border-slate-300">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center space-x-2 text-sm font-medium text-slate-700">
@@ -121,7 +138,7 @@ const InteractionDetails: React.FC = () => {
               </div>
               <p className="text-sm text-slate-400 italic">No samples added.</p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Sentiment */}
@@ -130,7 +147,10 @@ const InteractionDetails: React.FC = () => {
           <div className="flex items-center space-x-8">
             {['Positive', 'Neutral', 'Negative'].map((sentiment) => (
               <label key={sentiment} className="flex items-center space-x-2 cursor-pointer group">
-                <input type="radio" name="sentiment" className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" defaultChecked={sentiment === 'Neutral'} />
+                <input
+                  checked={form.sentiment === sentiment}
+                  onChange={() => dispatch(setField({ field: 'sentiment', value: sentiment }))}
+                  type="radio" name="sentiment" className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" defaultChecked={sentiment === 'Neutral'} />
                 <span className="text-sm text-slate-700 group-hover:text-slate-900 transition-colors">{sentiment}</span>
               </label>
             ))}
@@ -143,6 +163,8 @@ const InteractionDetails: React.FC = () => {
           <textarea
             rows={2}
             placeholder="Key outcomes or agreements..."
+            value={form.outcomes}
+            onChange={e => dispatch(setField({ field: 'outcomes', value: e.target.value }))}
             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
           ></textarea>
         </div>
@@ -153,6 +175,8 @@ const InteractionDetails: React.FC = () => {
           <textarea
             rows={2}
             placeholder="Enter next steps or tasks..."
+            value={form.followUpActions}
+            onChange={e => dispatch(setField({ field: 'followUpActions', value: e.target.value }))}
             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
           ></textarea>
         </div>

@@ -1,4 +1,4 @@
-import InteractionDetails from './components/InteractionDetails'
+import InteractionDetails from './features/interactionDetails/InteractionDetails'
 import AIChatSidebar from './components/AIChatSidebar'
 
 function App() {
