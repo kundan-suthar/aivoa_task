@@ -1,0 +1,158 @@
+# ----------------------
+
+# Python cache files
+
+# ----------------------
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# ----------------------
+
+# Virtual environments
+
+# ----------------------
+
+venv/
+.env/
+.venv/
+ENV/
+
+# ----------------------
+
+# Environment variables
+
+# ----------------------
+
+.env
+.env.*
+*.env
+
+# ----------------------
+
+# Logs & runtime files
+
+# ----------------------
+
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# ----------------------
+
+# Database files
+
+# ----------------------
+
+*.sqlite3
+*.db
+
+# ----------------------
+
+# Distribution / packaging
+
+# ----------------------
+
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ----------------------
+
+# Unit test / coverage
+
+# ----------------------
+
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ----------------------
+
+# Jupyter Notebook
+
+# ----------------------
+
+.ipynb_checkpoints
+
+# ----------------------
+
+# VS Code / IDE
+
+# ----------------------
+
+.vscode/
+.idea/
+
+# ----------------------
+
+# OS files
+
+# ----------------------
+
+.DS_Store
+Thumbs.db
+
+# ----------------------
+
+# Uvicorn / FastAPI
+
+# ----------------------
+
+*.reload
+
+# ----------------------
+
+# mypy / type checking
+
+# ----------------------
+
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ----------------------
+
+# Ruff / linting
+
+# ----------------------
+
+.ruff_cache/
+
+# ----------------------
+
+# Pyright
+
+# ----------------------
+
+.pyright/
+
+# ----------------------
+
+# uv specific
+
+# ----------------------
+
+.uv/
