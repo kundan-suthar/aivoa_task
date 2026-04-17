@@ -18,7 +18,7 @@ interface InteractionFormState {
   date: string;
   time: string;
   attendees: string;
-  topicsDiscussed: string;
+  topicsDiscussed: string[];
 //   materialsShared: MaterialItem[];
 //   samplesDistributed: SampleItem[];
   sentiment: 'Positive' | 'Neutral' | 'Negative';
@@ -27,17 +27,17 @@ interface InteractionFormState {
 }
 
 const initialState: InteractionFormState = {
-  hcpName: 'kundan suthar',
-  interactionType: 'Email',
-  date: '2025-04-29',
-  time: '20:46',
-  attendees: 'Kundan, kumar, suthar',
-  topicsDiscussed: 'kundan, kumar, suthar',
+  hcpName: '',
+  interactionType: 'Meeting',
+  date: '',
+  time: '',
+  attendees: '',
+  topicsDiscussed: [],
 //   materialsShared: [],
 //   samplesDistributed: [],
-  sentiment: 'Negative',
-  outcomes: 'kundan, kumar, suthar',
-  followUpActions: 'kundan, kumar, suthar',
+  sentiment: 'Neutral',
+  outcomes: '',
+  followUpActions: '',
 };
 
 const interactionSlice = createSlice({

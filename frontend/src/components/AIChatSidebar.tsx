@@ -1,20 +1,32 @@
 import React from 'react';
 import { Bot, Send } from 'lucide-react';
 import axios from 'axios';
-
+import { useAppDispatch } from '../app/hooks';
+import { bulkUpdate } from '../features/interactionDetails/interactionDetailsSlice';
 const AIChatSidebar: React.FC = () => {
   const [message, setMessage] = React.useState('');
-  const handleLogInteraction = () => {
-    axios.post('http://localhost:8000/interact', { user_message: message })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+  const [allMessages, setAllMessages] = React.useState<any[]>([]);
+  const dispatch = useAppDispatch();
+
+  const handleLogInteraction = async () => {
+    const userMesage = { id: Date.now(), message: message, role: "user" }
+    setAllMessages((prevMessages) => [...prevMessages, userMesage]);
+    let res = await axios.post('http://localhost:8000/interact', { user_message: message })
+    if (res.data.action == "log") {
+      dispatch(bulkUpdate(res.data.data));
+    } else if (res.data.action == "edit") {
+      dispatch(bulkUpdate(res.data.updated_data));
+    }
+    console.log(res.data);
+    let aiMessage = { id: Date.now(), message: res.data.message, role: "assistant", suggestions: res.data.suggestions }
+
+    setAllMessages((prevMessages) => [...prevMessages, aiMessage]);
+    setMessage("");
+
+
   }
   return (
-    <div className="fixed top-16 flex flex-col h-[550px] w-[300px] bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden my-2 mx-auto">
+    <div className="fixed top-16 flex flex-col h-[550px] w-[550px] bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden my-2 mx-auto">
       <div className="p-4 border-b border-slate-200 bg-white shadow-sm">
         <div className="flex items-center space-x-2">
           <div className="p-2 bg-blue-100 rounded-lg">
@@ -29,11 +41,19 @@ const AIChatSidebar: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Welcome Message */}
-        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-600 leading-relaxed">
-          <p>
-            Log interaction details here (e.g., "Met Dr. Smith, discussed Product X efficacy, positive sentiment, shared brochure") or ask for help.
-          </p>
-        </div>
+        {allMessages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-sm text-slate-600 leading-relaxed border-l-4 transition-all hover:shadow-md ${msg.role === "user"
+              ? "rounded-tl-none border-l-amber-400 shadow-[0_2px_12px_-3px_rgba(251,191,36,0.2)]"
+              : "rounded-tl-none border-l-blue-500 shadow-[0_2px_12px_-3px_rgba(59,130,246,0.2)]"
+              }`}
+          >
+            <p className="whitespace-pre-wrap">
+              {msg.message}
+            </p>
+          </div>
+        ))}
 
 
       </div>
@@ -55,7 +75,7 @@ const AIChatSidebar: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

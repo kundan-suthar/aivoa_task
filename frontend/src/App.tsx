@@ -18,7 +18,7 @@ function App() {
         </div>
 
         {/* Right Sidebar */}
-        <aside className="w-80 h-full hidden lg:block bg-slate-50 pr-4">
+        <aside className="w-[600px] h-full hidden lg:block bg-slate-50 pr-4">
           <AIChatSidebar />
         </aside>
       </main>

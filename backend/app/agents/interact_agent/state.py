@@ -8,3 +8,4 @@ class AgentState(TypedDict):
     intent: Optional[str]           # "log" | "edit" | "followup" — detected by router
     structured_data: Optional[dict]
     tool_response: Optional[dict]  
+    edit_delta: Optional[dict] 

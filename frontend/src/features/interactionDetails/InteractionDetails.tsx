@@ -150,7 +150,7 @@ const InteractionDetails: React.FC = () => {
                 <input
                   checked={form.sentiment === sentiment}
                   onChange={() => dispatch(setField({ field: 'sentiment', value: sentiment }))}
-                  type="radio" name="sentiment" className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" defaultChecked={sentiment === 'Neutral'} />
+                  type="radio" name="sentiment" className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
                 <span className="text-sm text-slate-700 group-hover:text-slate-900 transition-colors">{sentiment}</span>
               </label>
             ))}
