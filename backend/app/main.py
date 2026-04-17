@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.v1.routers.interaction import router as interaction_router
 app = FastAPI()
 
 # Allow frontend to talk to backend
@@ -16,3 +16,4 @@ app.add_middleware(
 def read_root():
     return {"message": "Backend is running!"}
 
+app.include_router(interaction_router)
