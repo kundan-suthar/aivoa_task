@@ -9,3 +9,4 @@ class AgentState(TypedDict):
     structured_data: Optional[dict]
     tool_response: Optional[dict]  
     edit_delta: Optional[dict] 
+    followup_data:   Optional[dict] 

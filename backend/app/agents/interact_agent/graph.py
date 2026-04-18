@@ -1,4 +1,6 @@
 # agent/graph.py
+from app.agents.interact_agent.nodes import run_followup_tool_node
+from app.agents.interact_agent.nodes import extract_followup_data_node
 from app.agents.interact_agent.nodes import run_edit_tool_node
 from app.agents.interact_agent.nodes import extract_edit_delta_node
 from langgraph.graph import StateGraph, END
@@ -22,6 +24,9 @@ def route_by_intent(state: AgentState) -> str:
     
     if intent == "edit":
         return "edit"
+    
+    if intent == "followup": 
+        return "followup"
 
     # Placeholders — will wire edit and followup tools next
     return "end"
@@ -35,6 +40,9 @@ def build_graph():
     graph.add_node("run_log_tool",            run_log_tool_node)
     graph.add_node("extract_edit_delta",      extract_edit_delta_node)
     graph.add_node("run_edit_tool",           run_edit_tool_node)
+    graph.add_node("extract_followup_data",   extract_followup_data_node)
+    graph.add_node("run_followup_tool",       run_followup_tool_node)
+
 
     graph.set_entry_point("detect_intent")
 
@@ -45,6 +53,7 @@ def build_graph():
         {
             "extract_and_log": "extract_structured_data",
             "edit": "extract_edit_delta",
+            "followup": "extract_followup_data",
             "end":              END,
         }
     )
@@ -56,6 +65,11 @@ def build_graph():
      # after edit
     graph.add_edge("extract_edit_delta", "run_edit_tool")
     graph.add_edge("run_edit_tool",      END)
+
+     # Follow-up path
+    graph.add_edge("extract_followup_data", "run_followup_tool")
+    graph.add_edge("run_followup_tool",     END)
+    
     
     return graph.compile()
 

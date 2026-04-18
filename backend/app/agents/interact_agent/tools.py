@@ -2,6 +2,7 @@
 from langchain_core.tools import tool
 from app.agents.interact_agent.schemas import InteractionExtraction
 from datetime import datetime
+import uuid
 
 @tool
 def log_interaction(extracted: dict) -> dict:
@@ -109,4 +110,30 @@ def edit_interaction(current_data: dict, edit_delta: dict) -> dict:
             if v is not None and v != [] and v != ""
         ],
         "message": "Got it. Here is the updated interaction."
+    }
+
+
+
+@tool
+def add_follow_up(title: str, due_date: str, task_type: str) -> dict:
+    """
+    Creates a follow-up task in the exact shape the frontend expects.
+
+    Args:
+        title:     Short task title
+        due_date:  Due date already formatted as MM/DD/YYYY
+        task_type: One of Email | Call | Visit | Meeting | Other
+    """
+    task_data = {
+        "id":      f"TASK-{str(uuid.uuid4())[:8].upper()}",
+        "title":   title,
+        "dueDate": due_date,
+        "type":    task_type,
+        "status":  "Pending",
+    }
+
+    return {
+        "action":    "add_follow_up",
+        "taskData":  task_data,
+        "message":   f"Follow-up task created for {due_date}.",
     }

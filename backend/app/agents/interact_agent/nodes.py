@@ -1,4 +1,6 @@
 # agent/nodes.py
+from app.agents.interact_agent.tools import add_follow_up
+from app.agents.interact_agent.schemas import FollowUpExtraction
 from app.agents.interact_agent.tools import edit_interaction
 from app.agents.interact_agent.schemas import EditExtraction
 from langchain_groq import ChatGroq
@@ -9,12 +11,15 @@ from app.agents.interact_agent.tools import log_interaction
 import dotenv
 import os
 from datetime import datetime
+
+
 dotenv.load_dotenv()
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"), temperature=0)
 
 structured_llm = llm.with_structured_output(InteractionExtraction, include_raw=False)
 edit_structured_llm = llm.with_structured_output(EditExtraction, include_raw=False)
+followup_structured_llm = llm.with_structured_output(FollowUpExtraction,    include_raw=False)
 
 # ── Node 1: detect_intent ──────────────────────────────────────────────────────
 def detect_intent_node(state: AgentState) -> AgentState:
@@ -22,15 +27,22 @@ def detect_intent_node(state: AgentState) -> AgentState:
     Simple LLM call to classify user intent.
     Returns: "log" | "edit" | "followup"
     """
-    prompt = f"""Classify the user's intent into exactly one word.
-            Options:
-            - log       → user is describing a new HCP interaction
-            - edit      → user is correcting or updating a previously mentioned detail
-            - followup  → user is specifying a follow-up action or date
+    prompt = f"""You are an intent classifier for a pharma CRM system.
+    Classify the user message into exactly one of these intents:
 
-            User message: "{state['raw_input']}"
+    - log       → user is describing or reporting a PAST interaction that already happened
+                Examples: "I met Dr Ravi today", "Visited Dr Kavi yesterday", "Had a call with Dr Smith"
 
-            Reply with only the single word."""
+    - edit      → user is correcting or updating a specific field from what was already logged
+                Examples: "Oh sorry, name was Dr Kavi", "Change the product to Drug Y", "Update sentiment to neutral"
+
+    - followup  → user wants to schedule or add a FUTURE task, meeting, call, or follow-up action
+                Examples: "Add meeting with Ravi next Monday", "Schedule a call next week", 
+                            "Set follow-up for 21 April", "Need to meet next Sunday"
+
+    User message: "{state['raw_input']}"
+
+    Reply with only one word: log, edit, or followup"""
 
     response = llm.invoke([HumanMessage(content=prompt)])
     intent = response.content.strip().lower()
@@ -104,3 +116,37 @@ def run_edit_tool_node(state: AgentState) -> AgentState:
         "structured_data": tool_response["updated_data"],
         "tool_response":   tool_response,
     }
+
+
+
+# ── Node 6: extract_followup_data ──────────────────────────────────────────────
+def extract_followup_data_node(state: AgentState) -> AgentState:
+    """
+    Extracts follow-up intent. Resolves relative dates like 'next sunday'
+    against today's actual date before sending to LLM.
+    """
+    today = datetime.now().strftime("%A, %B %d %Y")   # e.g. "Thursday, April 17 2026"
+
+    result: FollowUpExtraction = followup_structured_llm.invoke([
+        SystemMessage(content=f"""Extract follow-up task details from the user message.
+Today is {today}. Use this to resolve relative dates like 'next Sunday' or 'next week'.
+Always output due_date in MM/DD/YYYY format.
+If the user gives two options (e.g. 'next Sunday or 21 April'), pick the explicit date.
+If no title is mentioned, infer a short one from context like 'Follow up with Dr Kavi'.
+If no type is mentioned, default to 'Visit'."""),
+        HumanMessage(content=state["raw_input"]),
+    ])
+    return {**state, "followup_data": result.model_dump()}
+
+
+# ── Node 7: run_followup_tool ──────────────────────────────────────────────────
+def run_followup_tool_node(state: AgentState) -> AgentState:
+    followup = state.get("followup_data", {})
+
+    tool_response = add_follow_up.invoke({
+        "title":     followup.get("title")  or "Follow-up Task",
+        "due_date":  followup.get("due_date") or "",
+        "task_type": followup.get("type")   or "Visit",
+    })
+
+    return {**state, "tool_response": tool_response}

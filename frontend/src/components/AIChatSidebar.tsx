@@ -3,6 +3,7 @@ import { Bot, Send } from 'lucide-react';
 import axios from 'axios';
 import { useAppDispatch } from '../app/hooks';
 import { bulkUpdate } from '../features/interactionDetails/interactionDetailsSlice';
+import { openModal } from '../features/taskModal/taskModalSlice';
 const AIChatSidebar: React.FC = () => {
   const [message, setMessage] = React.useState('');
   const [allMessages, setAllMessages] = React.useState<any[]>([]);
@@ -16,6 +17,8 @@ const AIChatSidebar: React.FC = () => {
       dispatch(bulkUpdate(res.data.data));
     } else if (res.data.action == "edit") {
       dispatch(bulkUpdate(res.data.updated_data));
+    } else if (res.data.action == "add_follow_up") {
+      dispatch(openModal(res.data.taskData));
     }
     console.log(res.data);
     let aiMessage = { id: Date.now(), message: res.data.message, role: "assistant", suggestions: res.data.suggestions }

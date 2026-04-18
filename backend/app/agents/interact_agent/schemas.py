@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 from enum import Enum
 
 class InteractionType(str, Enum):
@@ -31,3 +31,13 @@ class EditExtraction(BaseModel):
     sentiment: Optional[Sentiment] = Field(None)
     summary: Optional[str] = Field(None)
     followUpActions: Optional[str] = Field(None)
+
+
+class FollowUpExtraction(BaseModel):
+    """LLM extracts follow-up intent from natural language."""
+    title: Optional[str] = Field(None, description="Short task title e.g. 'Follow up with Dr Kavi'")
+    due_date: Optional[str] = Field(None, description="Due date in MM/DD/YYYY format")
+    type: Optional[Literal["Email", "Call", "Visit", "Meeting", "Other"]] = Field(
+        None, description="Type of follow-up task"
+    )
+    description:  Optional[str] = Field(None, description="Short task detail e.g. 'discuss on updated reports'")
