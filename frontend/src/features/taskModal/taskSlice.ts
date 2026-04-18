@@ -15,32 +15,7 @@ interface TaskState {
 }
 
 const initialState: TaskState = {
-  tasks: [
-    {
-      id: 'TASK-1234',
-      title: 'Refine architectural details',
-      description: 'Review finalized blueprints for client approval.',
-      dueDate: 'Nov 24, 2026',
-      type: 'Email',
-      status: 'In Progress',
-    },
-    {
-      id: 'TASK-1235',
-      title: 'Quarterly strategy alignment',
-      description: 'Coordination call with regional managers.',
-      dueDate: 'Nov 26, 2026',
-      type: 'Meeting',
-      status: 'Pending',
-    },
-    {
-      id: 'TASK-1192',
-      title: 'Update vendor contracts',
-      description: 'Review legal terms for the new supplier.',
-      dueDate: 'Nov 20, 2026',
-      type: 'Legal',
-      status: 'Completed',
-    }
-  ],
+  tasks: [],
   isListModalOpen: false,
 };
 
